@@ -1,3 +1,11 @@
+const TOKEN = process.env.TOKEN;
+
+if (!TOKEN) {
+    console.error("TOKEN manquant !");
+    process.exit(1);
+}
+
+
 const {
   Client,
   GatewayIntentBits,
@@ -8,8 +16,6 @@ const {
   ChannelType,
   PermissionsBitField
 } = require("discord.js");
-
-const TOKEN = process.env.TOKEN;
 
 
 const client = new Client({
