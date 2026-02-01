@@ -1,10 +1,12 @@
 const TOKEN = process.env.TOKEN;
 
 if (!TOKEN) {
-    console.error("TOKEN manquant !");
-    process.exit(1);
+  console.error("TOKEN manquant !");
+  process.exit(1);
 }
 
+const ROLE_HELP_ID = "123456789012345678"; // 🛠️ ID du rôle help
+const TICKET_PANEL_CHANNEL_ID = "123456789012345678"; // 📩 Salon où envoyer le message ticket
 
 const {
   Client,
@@ -17,7 +19,6 @@ const {
   PermissionsBitField
 } = require("discord.js");
 
-
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -25,8 +26,24 @@ const client = new Client({
   ]
 });
 
-client.once("ready", () => {
+client.once("ready", async () => {
   console.log(`✅ Connecté en tant que ${client.user.tag}`);
+
+  // Envoi du message "Créer un ticket"
+  const channel = await client.channels.fetch(TICKET_PANEL_CHANNEL_ID);
+  if (!channel) return console.log("❌ Salon ticket introuvable");
+
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId("create_ticket")
+      .setLabel("🎟️ Créer un ticket")
+      .setStyle(ButtonStyle.Primary)
+  );
+
+  channel.send({
+    content: "**Besoin d'aide ?**\nClique sur le bouton ci-dessous pour ouvrir un ticket.",
+    components: [row]
+  });
 });
 
 client.on("interactionCreate", async interaction => {
@@ -39,21 +56,9 @@ client.on("interactionCreate", async interaction => {
         .setCustomId("ticket_type")
         .setPlaceholder("Choisis le type de ticket")
         .addOptions([
-          {
-            label: "Signalement",
-            value: "signalement",
-            emoji: "🚨"
-          },
-          {
-            label: "Demande de staff",
-            value: "staff",
-            emoji: "👮"
-          },
-          {
-            label: "Divers",
-            value: "divers",
-            emoji: "📦"
-          }
+          { label: "Signalement", value: "signalement", emoji: "🚨" },
+          { label: "Demande de staff", value: "staff", emoji: "👮" },
+          { label: "Divers", value: "divers", emoji: "📦" }
         ])
     );
 
@@ -69,28 +74,32 @@ client.on("interactionCreate", async interaction => {
 
     const type = interaction.values[0];
 
-permissionOverwrites: [
-  {
-    id: interaction.guild.id, // tout le monde
-    deny: [PermissionsBitField.Flags.ViewChannel] // tout le monde ne voit pas
-  },
-  {
-    id: interaction.user.id, // créateur du ticket
-    allow: [
-      PermissionsBitField.Flags.ViewChannel,
-      PermissionsBitField.Flags.SendMessages
-    ]
-  },
-  {
-    id: "1466512722035474616", // ici l’ID du rôle staff
-    allow: [
-      PermissionsBitField.Flags.ViewChannel,
-      PermissionsBitField.Flags.SendMessages,
-      PermissionsBitField.Flags.ManageChannels // optionnel
-    ]
-  }
-]
-
+    const channel = await interaction.guild.channels.create({
+      name: `ticket-${interaction.user.username}`,
+      type: ChannelType.GuildText,
+      permissionOverwrites: [
+        {
+          id: interaction.guild.id,
+          deny: [PermissionsBitField.Flags.ViewChannel]
+        },
+        {
+          id: interaction.user.id,
+          allow: [
+            PermissionsBitField.Flags.ViewChannel,
+            PermissionsBitField.Flags.SendMessages,
+            PermissionsBitField.Flags.ReadMessageHistory
+          ]
+        },
+        {
+          id: ROLE_HELP_ID,
+          allow: [
+            PermissionsBitField.Flags.ViewChannel,
+            PermissionsBitField.Flags.SendMessages,
+            PermissionsBitField.Flags.ReadMessageHistory
+          ]
+        }
+      ]
+    });
 
     channel.send(
       `🎫 **Ticket ${type}**\nBonjour ${interaction.user}, explique ton problème ici.`
@@ -104,15 +113,3 @@ permissionOverwrites: [
 });
 
 client.login(TOKEN);
-const channel = client.channels.cache.get("1464391408680173709");
-channel.send({
-  content: "**Besoin d'aide ?**",
-  components: [
-    new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId("create_ticket")
-        .setLabel("🎟️ Créer un ticket")
-        .setStyle(ButtonStyle.Primary)
-    )
-  ]
-});  
