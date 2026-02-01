@@ -126,8 +126,11 @@ client.on("interactionCreate", async interaction => {
         .setStyle(ButtonStyle.Danger)
     );
 
+    // PING DES RÔLES ICI
+    const pingRoles = `<@&${ROLE_HELP_ID}> <@&${ROLE_2_ID}> <@&${ROLE_3_ID}>`;
+
     channel.send({
-      content: `🎫 **Ticket ${type}**\nBonjour ${interaction.user}, explique ton problème ici.`,
+      content: `${pingRoles}\n🎫 **Ticket ${type}**\nBonjour ${interaction.user}, explique ton problème ici.`,
       components: [row]
     });
 
@@ -140,14 +143,12 @@ client.on("interactionCreate", async interaction => {
   // Fermeture du ticket
   if (interaction.isButton() && interaction.customId === "close_ticket") {
 
-    // Vérifie si c'est un salon ticket (commence par ticket-)
     if (!interaction.channel.name.startsWith("ticket-")) {
       return interaction.reply({ content: "❌ Ce bouton n'est pas dans un ticket.", ephemeral: true });
     }
 
     const member = interaction.member;
 
-    // Vérifie si l'utilisateur est le créateur ou a un des rôles help
     const isCreator = interaction.channel.name === `ticket-${member.user.username}`;
     const hasRoleHelp = member.roles.cache.has(ROLE_HELP_ID) ||
                         member.roles.cache.has(ROLE_2_ID) ||
@@ -157,7 +158,6 @@ client.on("interactionCreate", async interaction => {
       return interaction.reply({ content: "❌ Tu n'as pas la permission de fermer ce ticket.", ephemeral: true });
     }
 
-    // Supprime le salon après 5 secondes (pour laisser le message s'afficher)
     await interaction.reply({ content: "🔒 Ticket fermé. Suppression dans 5 secondes...", ephemeral: true });
     setTimeout(() => {
       interaction.channel.delete().catch(() => {});
