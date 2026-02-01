@@ -9,7 +9,8 @@ const {
   PermissionsBitField
 } = require("discord.js");
 
-const { token } = require("./config.json");
+const TOKEN = process.env.TOKEN;
+
 
 const client = new Client({
   intents: [
