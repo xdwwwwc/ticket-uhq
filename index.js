@@ -98,7 +98,7 @@ client.on("interactionCreate", async interaction => {
   }
 });
 
-client.login(token);
+client.login(TOKEN);
 const channel = client.channels.cache.get("ID_DU_SALON");
 channel.send({
   content: "**Besoin d'aide ?**",
