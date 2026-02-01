@@ -99,7 +99,7 @@ client.on("interactionCreate", async interaction => {
 });
 
 client.login(TOKEN);
-const channel = client.channels.cache.get("ID_DU_SALON");
+const channel = client.channels.cache.get("1464391408680173709");
 channel.send({
   content: "**Besoin d'aide ?**",
   components: [
