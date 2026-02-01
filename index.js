@@ -35,6 +35,16 @@ client.once("ready", async () => {
   const channel = await client.channels.fetch(TICKET_PANEL_CHANNEL_ID);
   if (!channel) return console.log("❌ Salon ticket introuvable");
 
+  // ⚠️ Empêche l'envoi multiple du message
+  const messages = await channel.messages.fetch({ limit: 50 });
+
+  const hasTicketMessage = messages.some(msg => 
+    msg.components.length > 0 &&
+    msg.components[0].components.some(c => c.customId === "create_ticket")
+  );
+
+  if (hasTicketMessage) return console.log("ℹ️ Message ticket déjà présent");
+
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
       .setCustomId("create_ticket")
@@ -126,7 +136,6 @@ client.on("interactionCreate", async interaction => {
         .setStyle(ButtonStyle.Danger)
     );
 
-    // PING DES RÔLES ICI
     const pingRoles = `<@&${ROLE_HELP_ID}> <@&${ROLE_2_ID}> <@&${ROLE_3_ID}>`;
 
     channel.send({
