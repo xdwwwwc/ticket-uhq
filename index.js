@@ -5,8 +5,8 @@ if (!TOKEN) {
   process.exit(1);
 }
 
-const ROLE_HELP_ID = "123456789012345678"; // 🛠️ ID du rôle help
-const TICKET_PANEL_CHANNEL_ID = "123456789012345678"; // 📩 Salon où envoyer le message ticket
+const ROLE_HELP_ID = "1466512722035474616"; // 🛠️ ID du rôle help
+const TICKET_PANEL_CHANNEL_ID = "1464391408680173709"; // 📩 Salon où envoyer le message ticket
 
 const {
   Client,
