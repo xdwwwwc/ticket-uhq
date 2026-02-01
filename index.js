@@ -103,7 +103,7 @@ client.once("ready", async () => {
   console.log(`✅ Connecté en tant que ${client.user.tag}`);
 
   // Récupère le salon où poster le message
-  const channel = client.channels.cache.get("ID_DU_SALON"); // Mets l'ID du salon ici
+  const channel = client.channels.cache.get("1464391408680173709"); // Mets l'ID du salon ici
   if (!channel) return console.error("Salon introuvable !");
 
   // Envoie le message avec le bouton
